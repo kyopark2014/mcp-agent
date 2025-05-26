@@ -1,31 +1,16 @@
 import traceback
 import boto3
-import os
 import json
-import re
 import uuid
-import time
-import base64
-import info 
-import PyPDF2
-import csv
 import asyncio
+import os
+import re
 
-from io import BytesIO
-from PIL import Image
 from langchain_aws import ChatBedrock
 from botocore.config import Config
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from langchain.memory import ConversationBufferWindowMemory
-from langchain_core.tools import tool
-from langchain.docstore.document import Document
-from tavily import TavilyClient  
-from langchain_community.tools.tavily_search import TavilySearchResults
-from urllib import parse
-from pydantic.v1 import BaseModel, Field
 from langchain_core.output_parsers import StrOutputParser
-from langchain_community.utilities.tavily_search import TavilySearchAPIWrapper
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
 from mcp import ClientSession, StdioServerParameters
@@ -67,6 +52,7 @@ memorystores[userId] = memorystore
 
 reasoning_mode = 'Disable'
 debug_messages = []  # List to store debug messages
+
 
 def get_debug_messages():
     global debug_messages
@@ -176,10 +162,6 @@ def update(modelName, debugMode, mcp):
         model_name = modelName
         logger.info(f"model_name: {model_name}")
         
-        models = info.get_model_info(model_name)
-        model_id = models[0]["model_id"]
-        model_type = models[0]["model_type"]
-                                
     if debug_mode != debugMode:
         debug_mode = debugMode
         logger.info(f"debug_mode: {debug_mode}")
@@ -237,6 +219,15 @@ def get_llm():
     
     return llm
 
+def isKorean(text):
+    pattern_hangul = re.compile('[\u3131-\u3163\uac00-\ud7a3]+')
+    word_kor = pattern_hangul.search(str(text))
+
+    if word_kor and word_kor != 'None':
+        return True
+    else:
+        return False
+    
 def translate_text(text):
     llm = get_llm()
 
@@ -361,29 +352,19 @@ def create_agent(tools, historyMode):
         last_message = state['messages'][-1].content
         logger.info(f"last message: {last_message}")
         
-        # get image_url from state
+        # Get image_url from state
         image_url = state['image_url'] if 'image_url' in state else []
-        if isinstance(last_message, str) and (last_message.strip().startswith('{') or last_message.strip().startswith('[')):
-            try:                 
-                tool_result = json.loads(last_message)
-                if "path" in tool_result:
-                    logger.info(f"path: {tool_result['path']}")
-
-                    path = tool_result['path']
-                    if isinstance(path, list):
-                        for p in path:
-                            logger.info(f"image: {p}")
-                            if p.startswith('http') or p.startswith('https'):
-                                image_url.append(p)
-                    else:
-                        logger.info(f"image: {path}")
-                        if path.startswith('http') or path.startswith('https'):
-                            image_url.append(path)
+        
+        # Check if last_message is JSON and contains path
+        if isinstance(last_message, str):
+            try:
+                message_data = json.loads(last_message)
+                if isinstance(message_data, dict) and "path" in message_data:
+                    image_url.append(message_data["path"])
+                    logger.info(f"Added path to image_url: {message_data['path']}")
             except json.JSONDecodeError:
-                tool_result = last_message
-        if image_url:
-            logger.info(f"image_url: {image_url}")
-
+                pass
+        
         system = (
             "당신의 이름은 서연이고, 질문에 친근한 방식으로 대답하도록 설계된 대화형 AI입니다."
             "상황에 맞는 구체적인 세부 정보를 충분히 제공합니다."
@@ -401,7 +382,7 @@ def create_agent(tools, historyMode):
             chain = prompt | model
                 
             response = chain.invoke(state["messages"])
-            # logger.info(f"call_model response: {response}")
+
             logger.info(f"call_model: {response.content}")
 
         except Exception:
@@ -525,6 +506,7 @@ def load_multiple_mcp_server_parameters():
     if mcpServers is not None:
         command = ""
         args = []
+        env = {}  # 기본 env 딕셔너리 초기화
         for server in mcpServers:
             logger.info(f"server: {server}")
 
@@ -538,18 +520,12 @@ def load_multiple_mcp_server_parameters():
             if "env" in config:
                 env = config["env"]
 
-                server_info[server] = {
-                    "command": command,
-                    "args": args,
-                    "env": env,
-                    "transport": "stdio"
-                }
-            else:
-                server_info[server] = {
-                    "command": command,
-                    "args": args,
-                    "transport": "stdio"
-                }
+            server_info[server] = {
+                "command": command,
+                "args": args,
+                "env": env,
+                "transport": "stdio"
+            }
     logger.info(f"server_info: {server_info}")
 
     return server_info

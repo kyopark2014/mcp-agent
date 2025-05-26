@@ -24,6 +24,45 @@ def load_config(mcp_type):
                 }
             }
         }
+    
+    elif mcp_type == "code_interpreter":
+        return {
+            "mcpServers": {
+                "aws_storage": {
+                    "command": "python",
+                    "args": [
+                        "application/mcp_server_coder.py"
+                    ]
+                }
+            }
+        }    
+
+    elif mcp_type == "aws_documentation":
+        return {
+            "mcpServers": {
+                "awslabs.aws-documentation-mcp-server": {
+                    "command": "uvx",
+                    "args": ["awslabs.aws-documentation-mcp-server@latest"],
+                    "env": {
+                        "FASTMCP_LOG_LEVEL": "ERROR"
+                    }
+                }
+            }
+        }
+    
+    elif mcp_type == "aws_cli":
+        return {
+            "mcpServers": {
+                "aw-cli": {
+                    "command": "python",
+                    "args": [
+                        "application/mcp_server_aws_cli.py"
+                    ]
+                }
+            }
+        }    
+    
+
     elif mcp_type == "image_generation":
         return {
             "mcpServers": {
@@ -88,18 +127,7 @@ def load_config(mcp_type):
             }
         }
     
-    elif mcp_type == "aws_documentation":
-        return {
-            "mcpServers": {
-                "awslabs.aws-documentation-mcp-server": {
-                    "command": "uvx",
-                    "args": ["awslabs.aws-documentation-mcp-server@latest"],
-                    "env": {
-                        "FASTMCP_LOG_LEVEL": "ERROR"
-                    }
-                }
-            }
-        }
+    
     
     elif mcp_type == "aws_cost":
         return {
@@ -178,29 +206,7 @@ def load_config(mcp_type):
             }
         }    
     
-    elif mcp_type == "code_interpreter":
-        return {
-            "mcpServers": {
-                "aws_storage": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_coder.py"
-                    ]
-                }
-            }
-        }    
     
-    elif mcp_type == "aws_cli":
-        return {
-            "mcpServers": {
-                "aw-cli": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_aws_cli.py"
-                    ]
-                }
-            }
-        }    
     
     elif mcp_type == "tavily":
         return {
@@ -209,7 +215,7 @@ def load_config(mcp_type):
                     "command": "npx",
                     "args": ["-y", "tavily-mcp@0.1.4"],
                     "env": {
-                        "TAVILY_API_KEY": chat.tavily_key
+                        "TAVILY_API_KEY": "TAVILY_API_KEY"
                     },
                 }
             }

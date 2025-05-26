@@ -1,5 +1,4 @@
 import boto3
-import utils
 import json
 import pandas as pd
 import plotly.express as px
