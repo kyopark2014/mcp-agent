@@ -209,8 +209,6 @@ def load_selected_config(mcp_selections: dict[str, bool]):
             config = load_config('aws_cloudwatch')
         elif server == "aws storage":
             config = load_config('aws_storage')
-        elif server == "knowledge base":
-            config = load_config('aws_rag')
         elif server == "code interpreter":
             config = load_config('code_interpreter')
         elif server == "aws cli":

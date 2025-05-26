@@ -1,7 +1,6 @@
 import streamlit as st 
 import chat
 import json
-import traceback
 import logging
 import sys
 import mcp_config
@@ -22,9 +21,6 @@ st.set_page_config(page_title='Agent', page_icon=None, layout="centered", initia
 mode_descriptions = {
     "일상적인 대화": [
         "대화이력을 바탕으로 챗봇과 일상의 대화를 편안히 즐길수 있습니다."
-    ],
-    "RAG": [
-        "Bedrock Knowledge Base를 이용해 구현한 RAG로 필요한 정보를 검색합니다."
     ],
     "Agent": [
         "MCP를 활용한 Agent를 이용합니다. 왼쪽 메뉴에서 필요한 MCP를 선택하세요."
@@ -55,7 +51,7 @@ with st.sidebar:
     
     # radio selection
     mode = st.radio(
-        label="원하는 대화 형태를 선택하세요. ",options=["일상적인 대화", "RAG", "Agent", "Agent (Chat)", "번역하기", "비용 분석"], index=2
+        label="원하는 대화 형태를 선택하세요. ",options=["일상적인 대화", "Agent", "Agent (Chat)", "번역하기", "비용 분석"], index=2
     )   
     st.info(mode_descriptions[mode][0])
     
@@ -68,8 +64,7 @@ with st.sidebar:
         # Change radio to checkbox
         mcp_options = [
             "default", "code interpreter", "aws document", "aws cli", 
-            "aws cloudwatch", "aws storage", "aws diagram",
-            "knowledge base", "tavily", "ArXiv", "wikipedia", 
+            "aws cloudwatch", "aws storage", "aws diagram", "tavily", "ArXiv", "wikipedia", 
             "filesystem", "playwright", "사용자 설정"
         ]
         mcp_selections = {}
@@ -216,18 +211,6 @@ if prompt := st.chat_input("메시지를 입력하세요."):
 
             chat.save_chat_history(prompt, response)
 
-        elif mode == 'RAG':
-            with st.status("running...", expanded=True, state="running") as status:
-                response, reference_docs = chat.run_rag_with_knowledge_base(prompt, st)                           
-                st.write(response)
-                logger.info(f"response: {response}")
-
-                st.session_state.messages.append({"role": "assistant", "content": response})
-
-                chat.save_chat_history(prompt, response)
-            
-            show_references(reference_docs) 
-        
         elif mode == 'Agent':
             sessionState = ""
             chat.references = []
