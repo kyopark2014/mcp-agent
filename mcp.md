@@ -67,3 +67,16 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 결과는 아래와 같습니다.
 
 ![image](https://github.com/user-attachments/assets/f1e995ef-2e0a-499a-a1de-e4d6655f5355)
+
+## AWS Documentation
+
+"aws의 secret key를 안전하게 보관하는 정책은?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/0885e918-9e66-458b-9aef-4a6b78ad321e)
+
+## AWS CLI
+
+"내가 가지고 있는 모든 aws 리소스는?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/dc1d25ed-d431-4ac1-80a8-39d968629304)
+
