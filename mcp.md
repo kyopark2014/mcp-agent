@@ -38,10 +38,16 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
     return timestr
 ```
 
-"여행하면서 읽기 좋은 책은?"이라고 입력합니다. 
+"여행하면서 읽기 좋은 책은?"이라고 입력후 결과를 확인합니다.
 
 ![image](https://github.com/user-attachments/assets/d8457806-32a2-4fa3-addb-b15d2c0c0482)
 
-"서울 날씨는"이라고 입력합니다.
+"서울 날씨는"이라고 입력후 결과를 확인합니다.
 
 ![image](https://github.com/user-attachments/assets/7c4adeae-77a0-4630-92b6-a14eaa69b5e4)
+
+아래와 같이 tool을 설정합니다.
+
+![image](https://github.com/user-attachments/assets/1bae6af5-f93c-412e-86c4-b4bd61435794)
+
+
