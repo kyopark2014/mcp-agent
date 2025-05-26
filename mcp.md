@@ -7,11 +7,15 @@
 1) [openweathermap](https://home.openweathermap.org/users/sign_in)에 접속합니다.
 2) 메뉴에서 [API를 선택한 후 스크롤하여 [Current Weather Data]을 Subscribe 합니다.
 3) [Free] Plan에서 [Get API key]을 선택하여 key를 복사합니다.
+4) config.json 파일을 생성해서 아래와 같이 입력합니다.
 
 아래와 같이 입력합니다.
 
-```python
-os.environ["WEATHER_API_KEY"] = "WEATHER_API_KEY"
+```java
+{
+    "WEATHER_API_KEY": "fbd----",
+    "TAVILY_API_KEY": "tvly-abcd"
+}
 ```
 
 
@@ -40,3 +44,4 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 "서울 날씨는"이라고 입력합니다.
 
+![image](https://github.com/user-attachments/assets/7c4adeae-77a0-4630-92b6-a14eaa69b5e4)
