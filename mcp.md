@@ -50,4 +50,7 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 ![image](https://github.com/user-attachments/assets/1bae6af5-f93c-412e-86c4-b4bd61435794)
 
+"네이버 주식 현황은?"이라고 입력합니다. yahoo stock으로 실패했습니다.
+
+![image](https://github.com/user-attachments/assets/b8b0c28e-f231-4c9e-803b-7a111eac4b7a)
 
