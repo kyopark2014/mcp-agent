@@ -1,12 +1,6 @@
-# MCP Application 구현하기
+# MCP Agent 활용하기
 
-MCP(Model Context Protocol)은 생성형 AI application이 외부 데이터를 활용하는 주요한 인터페이스로 빠르게 확산되고 있습니다. 2024년 11월에 Anthropic의 오픈소스 프로젝트로 시작되었고, 현재 Cursor뿐 아니라 OpenAI에서도 지원하고 있습니다. 여기에서는 [MCP with LangChain](https://github.com/langchain-ai/langchain-mcp-adapters)을 이용하여 LangGraph로 만든 application이 MCP를 활용하는 방법에 대해 설명합니다. 여기서 구현한 RAG는 Amazon의 완전관리형 RAG 서비스인 Knowledge base로 구현되었으므로, 문서의 텍스트 추출, 동기화, chunking과 같은 작업을 손쉽게 수행할 수 있으며, 멀티모달을 이용해 이미지/표를 분석할 수 있습니다. 여기에서는 MCP server에서 RAG에 손쉽게 접근할 수 있도록 AWS Lambda를 이용해 API를 구성하였습니다.
-
-
-아래 architecture는 AWS 환경에서 MCP를 포함한 Agent를 구성하는것을 보여줍니다. Agent는 MCP server/client 구조를 활용하여 외부의 데이터 소스를 활용할 수 있습니다. MCP client는 MCP server와 JSON-RPC 프로토콜에 기반하여 stdio/SSE로 통신을 수행합니다. Stdio 사용시 MCP Server는 python, java와 같은 코드로 구성이 되고, client에서 요청이 오면 RAG나 인터넷등을 이용해 데이터를 수집하거나 전달하는 역할을 수행합니다. SSE로 할 경우에 MCP client와 server는 IP로 통신을 하게 됩니다. 여기서는 Streamlit을 이용해 application의 UI를 구성하고, 사용자는 ALB - CloudFront를 이용해 HTTPS 방식으로 브라우저를 통해 application을 이용합니다. 또한, 여기에서는 커스터마이징이 유리한 LangGraph를 이용해 MCP 기반의 application을 개발하는것을 설명합니다. 
-
-<img src="https://github.com/user-attachments/assets/a263f0fa-22f1-483b-8936-a59429ace173" width="750">
-
+MCP(Model Context Protocol)은 생성형 AI application이 외부 데이터를 활용하는 주요한 인터페이스로 빠르게 확산되고 있습니다. 여기에서 MCP를 쉽게 사용해 볼수 있도록 local 환경에서 MCP와 agent를 구성합니다. Cloud 배포등 조금 더 상세한 내용은 [kyopark/mcp](https://github.com/kyopark2014/mcp)을 참조합니다.
 
 ## MCP 활용
 
