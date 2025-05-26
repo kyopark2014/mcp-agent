@@ -21,7 +21,6 @@ logging.basicConfig(
 logger = logging.getLogger("mcp-basic")
 
 config = json.load(open('application/config.json'))
-tavily_api_key = config["TAVILY_API_KEY"]
 weather_api_key = config["WEATHER_API_KEY"]
 
 def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:

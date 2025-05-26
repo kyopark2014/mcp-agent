@@ -1,6 +1,6 @@
-import chat
 import logging
 import sys
+import json
 
 logging.basicConfig(
     level=logging.INFO,  # Default to INFO level
@@ -10,6 +10,9 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger("mcp-cost")
+
+config = json.load(open('application/config.json'))
+tavily_api_key = config["TAVILY_API_KEY"]
 
 mcp_user_config = {}    
 def load_config(mcp_type):
@@ -62,84 +65,6 @@ def load_config(mcp_type):
             }
         }    
     
-
-    elif mcp_type == "image_generation":
-        return {
-            "mcpServers": {
-                "imageGeneration": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_image_generation.py"
-                    ]
-                }
-            }
-        }    
-    elif mcp_type == "airbnb":
-        return {
-            "mcpServers": {
-                "airbnb": {
-                    "command": "npx",
-                    "args": [
-                        "-y",
-                        "@openbnb/mcp-server-airbnb",
-                        "--ignore-robots-txt"
-                    ]
-                }
-            }
-        }
-    elif mcp_type == "playwright":
-        return {
-            "mcpServers": {
-                "playwright": {
-                    "command": "npx",
-                    "args": [
-                        "@playwright/mcp@latest"
-                    ]
-                }
-            }
-        }
-    elif mcp_type == "obsidian":
-        return {
-            "mcpServers": {
-                "mcp-obsidian": {
-                "command": "npx",
-                "args": [
-                    "-y",
-                    "@smithery/cli@latest",
-                    "run",
-                    "mcp-obsidian",
-                    "--config",
-                    "{\"vaultPath\":\"/\"}"
-                ]
-                }
-            }
-        }
-    elif mcp_type == "aws_diagram":
-        return {
-            "mcpServers": {
-                "awslabs.aws-diagram-mcp-server": {
-                    "command": "uvx",
-                    "args": ["awslabs.aws-diagram-mcp-server"],
-                    "env": {
-                        "FASTMCP_LOG_LEVEL": "ERROR"
-                    },
-                }
-            }
-        }
-    
-    
-    
-    elif mcp_type == "aws_cost":
-        return {
-            "mcpServers": {
-                "aws_cost": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_aws_cost.py"
-                    ]
-                }
-            }
-        }    
     elif mcp_type == "aws_cloudwatch":
         return {
             "mcpServers": {
@@ -163,7 +88,45 @@ def load_config(mcp_type):
                 }
             }
         }    
-        
+    
+    elif mcp_type == "aws_diagram":
+        return {
+            "mcpServers": {
+                "awslabs.aws-diagram-mcp-server": {
+                    "command": "uvx",
+                    "args": ["awslabs.aws-diagram-mcp-server"],
+                    "env": {
+                        "FASTMCP_LOG_LEVEL": "ERROR"
+                    },
+                }
+            }
+        }
+
+    elif mcp_type == "aws_rag":
+        return {
+            "mcpServers": {
+                "aws_storage": {
+                    "command": "python",
+                    "args": [
+                        "application/mcp_server_rag.py"
+                    ]
+                }
+            }
+        }    
+    
+    elif mcp_type == "tavily":
+        return {
+            "mcpServers": {
+                "tavily-mcp": {
+                    "command": "npx",
+                    "args": ["-y", "tavily-mcp@0.1.4"],
+                    "env": {
+                        "TAVILY_API_KEY": tavily_api_key
+                    },
+                }
+            }
+        }
+    
     elif mcp_type == "arxiv":
         return {
             "mcpServers": {
@@ -181,45 +144,6 @@ def load_config(mcp_type):
             }
         }
     
-    elif mcp_type == "firecrawl":
-        return {
-            "mcpServers": {
-                "firecrawl-mcp": {
-                    "command": "npx",
-                    "args": ["-y", "firecrawl-mcp"],
-                    "env": {
-                        "FIRECRAWL_API_KEY": chat.firecrawl_key
-                    }
-                }
-            }
-        }
-    
-    elif mcp_type == "aws_rag":
-        return {
-            "mcpServers": {
-                "aws_storage": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_rag.py"
-                    ]
-                }
-            }
-        }    
-    
-    
-    
-    elif mcp_type == "tavily":
-        return {
-            "mcpServers": {
-                "tavily-mcp": {
-                    "command": "npx",
-                    "args": ["-y", "tavily-mcp@0.1.4"],
-                    "env": {
-                        "TAVILY_API_KEY": "TAVILY_API_KEY"
-                    },
-                }
-            }
-        }
     elif mcp_type == "wikipedia":
         return {
             "mcpServers": {
@@ -231,19 +155,7 @@ def load_config(mcp_type):
                 }
             }
         }      
-    elif mcp_type == "terminal":
-        return {
-            "mcpServers": {
-                "iterm-mcp": {
-                    "command": "npx",
-                    "args": [
-                        "-y",
-                        "iterm-mcp"
-                    ]
-                }
-            }
-        }
-    
+        
     elif mcp_type == "filesystem":
         return {
             "mcpServers": {
@@ -257,52 +169,18 @@ def load_config(mcp_type):
             }
         }
     
-    elif mcp_type == "puppeteer":
+    elif mcp_type == "playwright":
         return {
             "mcpServers": {
-                "puppeteer": {
+                "playwright": {
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
-                }
-            }
-        }
-    
-    elif mcp_type == "perplexity":
-        return {
-            "mcpServers": {
-                "perplexity-mcp": {                    
-                    "command": "uvx",
                     "args": [
-                        "perplexity-mcp"
-                    ],
-                    "env": {
-                        "PERPLEXITY_API_KEY": chat.perplexity_key,
-                        "PERPLEXITY_MODEL": "sonar"
-                    }
+                        "@playwright/mcp@latest"
+                    ]
                 }
             }
         }
 
-    elif mcp_type == "text_editor":
-        return {
-            "mcpServers": {
-                "textEditor": {
-                    "command": "npx",
-                    "args": ["-y", "mcp-server-text-editor"]
-                }
-            }
-        }
-    
-    elif mcp_type == "context7":
-        return {
-            "mcpServers": {
-                "context7": {
-                    "command": "npx",
-                    "args": ["-y", "@upstash/context7-mcp@latest"]
-                }
-            }
-        }
-    
     elif mcp_type == "사용자 설정":
         return mcp_user_config
 
