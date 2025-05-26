@@ -54,3 +54,16 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 ![image](https://github.com/user-attachments/assets/b8b0c28e-f231-4c9e-803b-7a111eac4b7a)
 
+## Code Interpreter
+
+"strawberry의 r의 갯수는?"라고 입력 후에 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/0bb90de0-b8dc-4651-8384-051114f5770f)
+
+"가우시안 분포를 그래프로 그려주세요."라고 입력하면 아래와 같이 repl_drawer가 활용되어 생성된 코드로 그림을 그립니다. 
+
+![image](https://github.com/user-attachments/assets/97ae0842-02e5-49b8-ab77-85e031e17972)
+
+결과는 아래와 같습니다.
+
+![image](https://github.com/user-attachments/assets/f1e995ef-2e0a-499a-a1de-e4d6655f5355)
