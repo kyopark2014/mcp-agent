@@ -101,5 +101,34 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 이때의 결과는 아래와 같습니다
 
-![image](https://github.com/user-attachments/assets/1dcba52e-7e10-4d18-a720-895de89e149e)
+![image](https://github.com/user-attachments/assets/858382ad-e53e-4e7d-b00e-f347545a09d8)
 
+### Tavily 인터넷 검색
+
+"강남역 맛집은?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/c730dd74-0896-463f-9891-38c0856dbec4)
+
+### Arxiv 
+
+"reasoning은 무엇인가요?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/a5a9786a-5b76-49fc-8a9e-d4478a8fb93b)
+
+### Wikipedia
+
+"k-pop의 특징은?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/c9f41b01-c2d1-404b-91ca-db494b28df4e)
+
+### Filesystem
+
+"내 폴더의 파일 리스트?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/66239f7d-ce1b-439e-846a-b55fc8695b96)
+
+### Playwright
+
+"https://github.com/kyopark2014/mcp 의 내용을 요약하세요."와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/fee02f29-08fc-476c-a62e-fc2b412a565f)
