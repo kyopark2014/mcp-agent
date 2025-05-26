@@ -18,8 +18,9 @@
 }
 ```
 
+## Tool의 사용
 
-## Default
+### Default
 
 "현재 시간은?"으로 입력 후 결과를 확인합니다.
 
@@ -54,7 +55,7 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 ![image](https://github.com/user-attachments/assets/b8b0c28e-f231-4c9e-803b-7a111eac4b7a)
 
-## Code Interpreter
+### Code Interpreter
 
 "strawberry의 r의 갯수는?"라고 입력 후에 결과를 확인합니다.
 
@@ -68,15 +69,37 @@ def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
 
 ![image](https://github.com/user-attachments/assets/f1e995ef-2e0a-499a-a1de-e4d6655f5355)
 
-## AWS Documentation
+### AWS Documentation
 
 "aws의 secret key를 안전하게 보관하는 정책은?"와 같이 입력후 결과를 확인합니다.
 
 ![image](https://github.com/user-attachments/assets/0885e918-9e66-458b-9aef-4a6b78ad321e)
 
-## AWS CLI
+### AWS CLI
 
 "내가 가지고 있는 모든 aws 리소스는?"와 같이 입력후 결과를 확인합니다.
 
 ![image](https://github.com/user-attachments/assets/dc1d25ed-d431-4ac1-80a8-39d968629304)
+
+### AWS CloudWatch
+
+"내 cloudwatch 로그 현황은?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/061ccac7-f886-4a6f-9997-45656aec68b0)
+
+### AWS Storage
+
+"내 스토리지 현황은?"와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/a96ad8a1-45f2-4997-bf04-9fb022971dea)
+
+### AWS Diagram
+
+"api gateway - cloudfront - s3로 구성되는 cloud architecture 그려주세요."와 같이 입력후 결과를 확인합니다.
+
+![image](https://github.com/user-attachments/assets/2cb691f6-e1e5-4da4-9fd6-f582aa936c8e)
+
+이때의 결과는 아래와 같습니다
+
+![image](https://github.com/user-attachments/assets/1dcba52e-7e10-4d18-a720-895de89e149e)
 
