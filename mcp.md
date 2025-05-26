@@ -1,13 +1,21 @@
 # MCP 실습
 
-## 실습에 필요한 함수 설정
+## 실습에 필요한 Key 설정
 
 ### 날씨 API
 
 1) [openweathermap](https://home.openweathermap.org/users/sign_in)에 접속합니다.
 2) 메뉴에서 [API를 선택한 후 스크롤하여 [Current Weather Data]을 Subscribe 합니다.
 3) [Free] Plan에서 [Get API key]을 선택하여 key를 복사합니다.
-4) config.json 파일을 생성해서 아래와 같이 입력합니다.
+
+### Tavily Search
+
+1) [Tavily.com](https://www.tavily.com/)에 접속합니다.
+2) API key를 복사합니다.
+
+### Key의 보관
+
+config.json 파일을 생성해서 아래와 같이 입력합니다.
 
 아래와 같이 입력합니다.
 
@@ -17,6 +25,7 @@
     "TAVILY_API_KEY": "tvly-abcd"
 }
 ```
+
 
 ## Tool의 사용
 
