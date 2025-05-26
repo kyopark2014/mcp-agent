@@ -368,9 +368,15 @@ Diagram을 그리기 위해서는 [Graphviz](https://www.graphviz.org/download/)
 brew install graphviz
 ```
 
+## 실행 결과
 
+"서울에서 부산을 거쳐서 제주에 가려고 합니다. 가는 동안의 날씨와 맛집은?"와 같이 복잡 질문을 수행하면 아래와 같이 여러가지 tool들을 이용하여 정보를 수집합니다. 
 
+![image](https://github.com/user-attachments/assets/1472c28b-e805-422c-b3ee-5a1246acf0cf)
 
+결과는 아래와 같이 복잡 질문에 대해 답변이 가능합니다.
+
+![image](https://github.com/user-attachments/assets/c8909669-c5b9-4b5a-a498-eb7f1b4db37f)
 
 ## Reference 
 
