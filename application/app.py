@@ -5,6 +5,7 @@ import traceback
 import logging
 import sys
 import mcp_config
+import cost_analysis as cost
 
 logging.basicConfig(
     level=logging.INFO,  # Default to INFO level
@@ -34,12 +35,6 @@ mode_descriptions = {
     "번역하기": [
         "한국어와 영어에 대한 번역을 제공합니다. 한국어로 입력하면 영어로, 영어로 입력하면 한국어로 번역합니다."        
     ],
-    "문법 검토하기": [
-        "영어와 한국어 문법의 문제점을 설명하고, 수정된 결과를 함께 제공합니다."
-    ],
-    "이미지 분석": [
-        "이미지를 업로드하면 이미지의 내용을 요약할 수 있습니다."
-    ],
     "비용 분석": [
         "Cloud 사용에 대한 분석을 수행합니다."
     ]
@@ -51,7 +46,7 @@ with st.sidebar:
     st.markdown(
         "Amazon Bedrock을 이용해 다양한 형태의 대화를 구현합니다." 
         "여기에서는 MCP를 이용해 Agent를 구현합니다." 
-        "또한 번역이나 문법 확인과 같은 용도로 사용할 수 있습니다."
+        "또한 번역 기능을 사용할 수 있습니다."
         "주요 코드는 LangChain과 LangGraph를 이용해 구현되었습니다.\n"
         "상세한 코드는 [Github](https://github.com/kyopark2014/mcp-agent)을 참조하세요."
     )
@@ -60,7 +55,7 @@ with st.sidebar:
     
     # radio selection
     mode = st.radio(
-        label="원하는 대화 형태를 선택하세요. ",options=["일상적인 대화", "RAG", "Agent", "Agent (Chat)", "번역하기", "문법 검토하기", "이미지 분석", "비용 분석"], index=2
+        label="원하는 대화 형태를 선택하세요. ",options=["일상적인 대화", "RAG", "Agent", "Agent (Chat)", "번역하기", "비용 분석"], index=2
     )   
     st.info(mode_descriptions[mode][0])
     
@@ -130,14 +125,6 @@ with st.sidebar:
     debugMode = 'Enable' if select_debugMode else 'Disable'
     #print('debugMode: ', debugMode)
 
-    if mode=='이미지 분석':
-        st.subheader("🌇 이미지 업로드")
-        uploaded_file = st.file_uploader("이미지 요약을 위한 파일을 선택합니다.", type=["png", "jpg", "jpeg"])
-    elif mode=='RAG' or mode=="Agent" or mode=="Agent (chat)":
-        st.subheader("📋 문서 업로드")
-        # print('fileId: ', chat.fileId)
-        uploaded_file = st.file_uploader("RAG를 위한 파일을 선택합니다.", type=["pdf", "txt", "py", "md", "csv", "json"], key=chat.fileId)
-
     chat.update(modelName, debugMode, mcp)
 
     st.success(f"Connected to {modelName}", icon="💚")
@@ -191,7 +178,6 @@ if not st.session_state.greetings:
 
 if clear_button or "messages" not in st.session_state:
     st.session_state.messages = []        
-    uploaded_file = None
     
     st.session_state.greetings = False
     chat.clear_chat_history()
@@ -199,53 +185,6 @@ if clear_button or "messages" not in st.session_state:
 
 # Preview the uploaded image in the sidebar
 file_name = ""
-state_of_code_interpreter = False
-if uploaded_file is not None and clear_button==False:
-    logger.info(f"uploaded_file.name: {uploaded_file.name}")
-    if uploaded_file.name:
-        logger.info(f"csv type? {uploaded_file.name.lower().endswith(('.csv'))}")
-
-    if uploaded_file.name and not mode == '이미지 분석':
-        chat.initiate()
-
-        if debugMode=='Enable':
-            status = '선택한 파일을 업로드합니다.'
-            logger.info(f"status: {status}")
-            st.info(status)
-
-        file_name = uploaded_file.name
-        logger.info(f"uploading... file_name: {file_name}")
-        file_url = chat.upload_to_s3(uploaded_file.getvalue(), file_name)
-        logger.info(f"file_url: {file_url}")
-
-        kb.sync_data_source()  # sync uploaded files
-            
-        status = f'선택한 "{file_name}"의 내용을 요약합니다.'
-        # my_bar = st.sidebar.progress(0, text=status)
-        
-        # for percent_complete in range(100):
-        #     time.sleep(0.2)
-        #     my_bar.progress(percent_complete + 1, text=status)
-        if debugMode=='Enable':
-            logger.info(f"status: {status}")
-            st.info(status)
-    
-        msg = chat.get_summary_of_uploaded_file(file_name, st)
-        st.session_state.messages.append({"role": "assistant", "content": f"선택한 문서({file_name})를 요약하면 아래와 같습니다.\n\n{msg}"})    
-        logger.info(f"msg: {msg}")
-
-        st.write(msg)
-
-    if uploaded_file and clear_button==False and mode == '이미지 분석':
-        st.image(uploaded_file, caption="이미지 미리보기", use_container_width=True)
-
-        file_name = uploaded_file.name
-        url = chat.upload_to_s3(uploaded_file.getvalue(), file_name)
-        logger.info(f"url: {url}")
-
-if seed_image_url and clear_button==False and enable_seed==True:
-    st.image(seed_image_url, caption="이미지 미리보기", use_container_width=True)
-    logger.info(f"preview: {seed_image_url}")
     
 if clear_button==False and mode == '비용 분석':
     st.subheader("📈 Cost Analysis")
@@ -375,29 +314,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
 
             st.session_state.messages.append({"role": "assistant", "content": response})
             chat.save_chat_history(prompt, response)
-
-        elif mode == '문법 검토하기':
-            response = chat.check_grammer(prompt)
-            st.write(response)
-
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            chat.save_chat_history(prompt, response)
         
-        elif mode == '이미지 분석':
-            if uploaded_file is None or uploaded_file == "":
-                st.error("파일을 먼저 업로드하세요.")
-                st.stop()
-
-            else:
-                if modelName == "Claude 3.5 Haiku":
-                    st.error("Claude 3.5 Haiku은 이미지를 지원하지 않습니다. 다른 모델을 선택해주세요.")
-                else:
-                    with st.status("thinking...", expanded=True, state="running") as status:
-                        summary = chat.get_image_summarization(file_name, prompt, st)
-                        st.write(summary)
-
-                        st.session_state.messages.append({"role": "assistant", "content": summary})
-
         elif mode == '비용 분석':
             with st.status("thinking...", expanded=True, state="running") as status:
                 response = cost.ask_cost_insights(prompt)
@@ -414,5 +331,3 @@ if prompt := st.chat_input("메시지를 입력하세요."):
             st.session_state.messages.append({"role": "assistant", "content": response})
             chat.save_chat_history(prompt, response)
         
-
-
