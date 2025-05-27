@@ -345,16 +345,16 @@ streamlit run application/app.py
 brew install --cask docker
 ```
 
-이제 빌드합니다.
+이제 아래와 같이 스크립트를 이용해 빌드합니다. [build.sh](./build.sh)는 aws credential을 조회해서 build 할때에 포함합니다.
 
 ```text
-docker build -t mcp-agent .
+build.sh
 ```
 
 브라우저에서 아래 URL로 접속합니다.
 
 ```text
-http://0.0.0.0:8501
+http://0.0.0.0:8502
 ```
 
 
