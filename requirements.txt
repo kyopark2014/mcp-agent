@@ -4,3 +4,4 @@ langchain-aws
 requests
 mcp 
 langchain-mcp-adapters
+yfinance
