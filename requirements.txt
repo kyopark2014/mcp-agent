@@ -2,9 +2,11 @@ langchain
 langchain-community
 langchain-aws
 langgraph
+langchain_experimental
 requests
 mcp 
 pytz
+pillow
 langchain-mcp-adapters
 yfinance
 aioboto3
