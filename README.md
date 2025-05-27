@@ -348,7 +348,7 @@ brew install --cask docker
 이제 아래와 같이 스크립트를 이용해 빌드합니다. [build.sh](./build.sh)는 aws credential을 조회해서 build 할때에 포함합니다.
 
 ```text
-build.sh
+./build.sh
 ```
 
 이제 아래와 같이 실행합니다. 아래에서는 편의상 docker의 포트를 8502로 설정하였는데 자신의 환경에 따라 설정할 수 있습니다.
