@@ -1,6 +1,7 @@
 langchain
 langchain-community
 langchain-aws
+langgraph
 requests
 mcp 
 langchain-mcp-adapters
