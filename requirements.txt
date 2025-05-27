@@ -7,3 +7,4 @@ mcp
 pytz
 langchain-mcp-adapters
 yfinance
+aioboto3
