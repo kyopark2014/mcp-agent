@@ -12,3 +12,4 @@ yfinance
 aioboto3
 matplotlib
 sarif-om
+wikipedia
