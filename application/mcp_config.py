@@ -63,7 +63,7 @@ def load_config(mcp_type):
     elif mcp_type == "aws_cli":
         return {
             "mcpServers": {
-                "aw-cli": {
+                "aws-cli": {
                     "command": "python",
                     "args": [
                         "application/mcp_server_aws_cli.py"
