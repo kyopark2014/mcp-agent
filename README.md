@@ -337,22 +337,6 @@ python -m pip install -r requirements.txt
 streamlit run application/app.py
 ```
 
-
-### MCP Inspector
-
-Development Mode에서 mcp server를 테스트 하기 위해 MCP inspector를 이용할 수 있습니다. 아래와 같이 cli를 설치합니다. 
-
-```text
-pip install 'mcp[cli]'
-```
-
-이후 아래와 같이 실행하면 쉽게 mcp-server.py의 동작을 테스트 할 수 있습니다. 실행시 http://localhost:5173 와 같은 URL을 제공합니다.
-
-```text
-mcp dev mcp-server.py
-```
-
-
 ### 실행 준비
 
 Diagram을 그리기 위해서는 [Graphviz](https://www.graphviz.org/download/)를 따라서 graphviz를 설치합니다. Mac에서는 아래 명령어를 사용합니다.
