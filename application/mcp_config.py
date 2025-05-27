@@ -14,6 +14,8 @@ logger = logging.getLogger("mcp-cost")
 try:
     config = json.load(open('application/config.json'))
     tavily_api_key = config.get("TAVILY_API_KEY", "")
+    if not tavily_api_key:
+        logger.warning("TAVILY_API_KEY is not set in config.json")
 except (FileNotFoundError, json.JSONDecodeError) as e:
     logger.warning(f"Error reading config.json file: {e}")
     config = {}
@@ -120,6 +122,9 @@ def load_config(mcp_type):
         }    
     
     elif mcp_type == "tavily":
+        if not tavily_api_key:
+            logger.warning("Tavily server is disabled due to missing API key")
+            return {}
         return {
             "mcpServers": {
                 "tavily-mcp": {
