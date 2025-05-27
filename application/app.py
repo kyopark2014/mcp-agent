@@ -223,58 +223,6 @@ if prompt := st.chat_input("메시지를 입력하세요."):
             chat.image_url = []
             response = chat.run_agent(prompt, "Enable", st)
 
-        elif mode == "Multi-agent Supervisor (Router)":
-            sessionState = ""
-            chat.references = []
-            chat.image_url = []
-            with st.status("thinking...", expanded=True, state="running") as status:
-                response, image_url, reference_docs = router.run_router_supervisor(prompt, st)
-                st.write(response)
-                logger.info(f"response: {response}")
-                
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": response,
-                    "images": image_url if image_url else []
-                })
-                chat.save_chat_history(prompt, response)       
-
-                show_references(reference_docs)              
-
-        elif mode == "LangGraph Supervisor":
-            sessionState = ""
-            chat.references = []
-            chat.image_url = []
-            with st.status("thinking...", expanded=True, state="running") as status:
-                response, image_url, reference_docs = supervisor.run_langgraph_supervisor(prompt, st)
-                st.write(response)
-                logger.info(f"response: {response}")
-                
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": response,
-                    "images": image_url if image_url else []
-                })
-                chat.save_chat_history(prompt, response)       
-
-                show_references(reference_docs)              
-
-        elif mode == "LangGraph Swarm":
-            sessionState = ""
-            with st.status("thinking...", expanded=True, state="running") as status:
-                response, image_url, reference_docs = swarm.run_langgraph_swarm(prompt, st)
-                st.write(response)
-                logger.info(f"response: {response}")
-                
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": response,
-                    "images": image_url if image_url else []
-                })
-                chat.save_chat_history(prompt, response)       
-
-                show_references(reference_docs)              
-
         elif mode == '번역하기':
             response = chat.translate_text(prompt)
             st.write(response)
