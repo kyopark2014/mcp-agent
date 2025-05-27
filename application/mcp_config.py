@@ -11,8 +11,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mcp-cost")
 
-config = json.load(open('application/config.json'))
-tavily_api_key = config["TAVILY_API_KEY"]
+try:
+    config = json.load(open('application/config.json'))
+    tavily_api_key = config.get("TAVILY_API_KEY", "")
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    logger.warning(f"Error reading config.json file: {e}")
+    config = {}
+    tavily_api_key = ""
 
 mcp_user_config = {}    
 def load_config(mcp_type):
@@ -181,14 +186,14 @@ def load_config(mcp_type):
             }
         }
 
-    elif mcp_type == "사용자 설정":
+    elif mcp_type == "user_config":
         return mcp_user_config
 
 def load_selected_config(mcp_selections: dict[str, bool]):
     #logger.info(f"mcp_selections: {mcp_selections}")
     loaded_config = {}
 
-    # True 값만 가진 키들을 리스트로 변환
+    # Convert keys with True values to a list
     selected_servers = [server for server, is_selected in mcp_selections.items() if is_selected]
     logger.info(f"selected_servers: {selected_servers}")
 
