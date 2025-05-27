@@ -19,9 +19,16 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger("mcp-basic")
-
-config = json.load(open('application/config.json'))
-weather_api_key = config["WEATHER_API_KEY"]
+    
+try:
+    config = json.load(open('application/config.json'))
+    weather_api_key = config.get("WEATHER_API_KEY", "")
+    if not weather_api_key:
+        logger.warning("WEATHER_API_KEY is not set in config.json")
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    logger.warning(f"Error reading config.json file: {e}")
+    config = {}
+    weather_api_key = ""    
 
 def get_current_time(format: str=f"%Y-%m-%d %H:%M:%S")->str:
     """Returns the current date and time in the specified format"""
