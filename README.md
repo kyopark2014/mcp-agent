@@ -316,7 +316,7 @@ def create_agent(tools):
 }
 ```
 
-### 실행하기
+### Local에서 실행하기 (MAC)
 
 venv로 환경을 구성하면 편리합니다. 아래와 같이 환경을 설정합니다.
 
@@ -336,6 +336,29 @@ python -m pip install -r requirements.txt
 ```text
 streamlit run application/app.py
 ```
+
+### Local에서 Docker로 실행하기
+
+아래와 같이 docker를 설치하고 실행합니다.
+
+```text
+brew install --cask docker
+```
+
+이제 빌드합니다.
+
+```text
+docker build -t mcp-agent .
+```
+
+브라우저에서 아래 URL로 접속합니다.
+
+```text
+http://0.0.0.0:8501
+```
+
+
+
 
 ### 실행 준비
 
