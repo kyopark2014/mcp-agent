@@ -318,20 +318,28 @@ def create_agent(tools):
 
 ### Local에서 실행하기 (MAC)
 
-venv로 환경을 구성하면 편리합니다. 아래와 같이 환경을 설정합니다.
+venv로 환경을 구성하면 편리합니다. 적당한 폴더를 만들고 아래와 같이 환경을 설정합니다.
 
 ```text
 python -m venv venv
 source venv/bin/activate
 ```
 
+소스를 다운로드 합니다.
+
+```python
+git clone https://github.com/kyopark2014/mcp-agent
+```
+
 이후 다운로드 받은 github 폴더로 이동한 후에 아래와 같이 필요한 패키지를 추가로 설치 합니다.
 
 ```text
-python -m pip install -r requirements.txt
+cd mcp-agent && python -m pip install -r requirements.txt
 ```
 
-아래와 같은 명령어로 streamlit을 실행합니다. 
+[실습에 필요한 Key 설정](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#%EC%8B%A4%EC%8A%B5%EC%97%90-%ED%95%84%EC%9A%94%ED%95%9C-key-%EC%84%A4%EC%A0%95)에 따라서, 인터넷과 날씨조회 API에 대한 key를 설정합니다.
+
+이제 준비가 되었으므로, 아래와 같은 명령어로 streamlit을 실행합니다. 
 
 ```text
 streamlit run application/app.py
