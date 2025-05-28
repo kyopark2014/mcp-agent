@@ -318,28 +318,30 @@ def create_agent(tools):
 
 ### Local에서 실행하기 (MAC)
 
-venv로 환경을 구성하면 편리합니다. 적당한 폴더를 만들고 아래와 같이 환경을 설정합니다.
+1) 필수는 아니지만 정상적인 진행을 위해서는 AWS CLI가 필요합니다. [최신 버전의 AWS CLI 설치 또는 업데이트](https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/getting-started-install.html)에 따라 설치후 "aws configure" 명령으로 AWS credential을 등록합니다.
+
+2) venv로 환경을 구성하면 편리합니다. 적당한 폴더를 만들고 아래와 같이 환경을 설정합니다.
 
 ```text
 python -m venv venv
 source venv/bin/activate
 ```
 
-소스를 다운로드 합니다.
+3) 소스를 다운로드 합니다.
 
 ```python
 git clone https://github.com/kyopark2014/mcp-agent
 ```
 
-이후 다운로드 받은 github 폴더로 이동한 후에 아래와 같이 필요한 패키지를 추가로 설치 합니다.
+4) 이후 다운로드 받은 github 폴더로 이동한 후에 아래와 같이 필요한 패키지를 추가로 설치 합니다.
 
 ```text
 cd mcp-agent && python -m pip install -r requirements.txt
 ```
 
-[실습에 필요한 Key 설정](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#%EC%8B%A4%EC%8A%B5%EC%97%90-%ED%95%84%EC%9A%94%ED%95%9C-key-%EC%84%A4%EC%A0%95)에 따라서, 인터넷과 날씨조회 API에 대한 key를 설정합니다.
+5) [실습에 필요한 Key 설정](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#%EC%8B%A4%EC%8A%B5%EC%97%90-%ED%95%84%EC%9A%94%ED%95%9C-key-%EC%84%A4%EC%A0%95)에 따라서, 인터넷과 날씨조회 API에 대한 key를 설정합니다.
 
-이제 준비가 되었으므로, 아래와 같은 명령어로 streamlit을 실행합니다. 
+6) 이제 준비가 되었으므로, 아래와 같은 명령어로 streamlit을 실행합니다. [MCP Tool 사용 방법](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#mcp-tool-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95)을 참조하여 동작 테스트를 수행합니다.
 
 ```text
 streamlit run application/app.py
