@@ -5,12 +5,12 @@
 ### 날씨 API
 
 1) [openweathermap](https://home.openweathermap.org/users/sign_in)에 접속합니다.
-2) 메뉴에서 [API를 선택한 후 스크롤하여 [Current Weather Data]을 Subscribe 합니다.
-3) [Free] Plan에서 [Get API key]을 선택하여 key를 복사합니다.
+2) 메뉴에서 [API를 선택한 후 스크롤하여 [Current Weather Data]을 Subscribe 합니다. 이때 반드시 [Free] Plan을 선택합니다.
+3) 메뉴에서 API를 선택하고 [Get API key]을 선택하여 key를 복사합니다.
 
-### Tavily Search
+### 인터넷 검색 (Tavily)
 
-1) [Tavily.com](https://www.tavily.com/)에 접속합니다.
+1) [Tavily.com](https://www.tavily.com/)에 접속하여 구글 메일로 가입을 합니다. 
 2) API key를 복사합니다.
 
 ### Key의 보관
