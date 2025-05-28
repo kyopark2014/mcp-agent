@@ -27,7 +27,7 @@ application 폴더에 config.json 파일을 생성해서 아래와 같이 입력
 ```
 
 
-## Tool의 사용
+## MCP Tool 사용 방법
 
 ### Default
 
