@@ -339,7 +339,14 @@ git clone https://github.com/kyopark2014/mcp-agent
 cd mcp-agent && python -m pip install -r requirements.txt
 ```
 
-5) [실습에 필요한 Key 설정](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#%EC%8B%A4%EC%8A%B5%EC%97%90-%ED%95%84%EC%9A%94%ED%95%9C-key-%EC%84%A4%EC%A0%95)에 따라서, 인터넷과 날씨조회 API에 대한 key를 설정합니다.
+5) [실습에 필요한 Key 설정](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#%EC%8B%A4%EC%8A%B5%EC%97%90-%ED%95%84%EC%9A%94%ED%95%9C-key-%EC%84%A4%EC%A0%95)에 따라서, 인터넷과 날씨조회 API에 대한 key를 설정합니다. 설정이 되면, application/config.json을 아래와 같은 json 파일이 생성됩니다.
+
+```java
+{
+    "WEATHER_API_KEY": "fbd00245cabcedefghijkd3e94905f7049",
+    "TAVILY_API_KEY": "tvly-1234567890U3imZFs4LNO2g0Qv1LoE"
+}
+```
 
 6) 이제 준비가 되었으므로, 아래와 같은 명령어로 streamlit을 실행합니다. [MCP Tool 사용 방법](https://github.com/kyopark2014/mcp-agent/blob/main/mcp.md#mcp-tool-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95)을 참조하여 동작 테스트를 수행합니다.
 
