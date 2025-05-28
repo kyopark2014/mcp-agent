@@ -14,3 +14,4 @@ matplotlib
 sarif-om
 wikipedia
 plotly_express
+streamlit
