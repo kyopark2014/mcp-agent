@@ -15,7 +15,7 @@
 
 ### Key의 보관
 
-config.json 파일을 생성해서 아래와 같이 입력합니다.
+application 폴더에 config.json 파일을 생성해서 아래와 같이 입력합니다. 
 
 아래와 같이 입력합니다.
 
