@@ -4,6 +4,7 @@ import json
 import uuid
 import asyncio
 import re
+import agent
 
 from langchain_aws import ChatBedrock
 from botocore.config import Config
@@ -183,6 +184,10 @@ def get_llm():
         modelId = "anthropic.claude-3-sonnet-20240229-v1:0"
     elif model_name == "Claude 3.5 Haiku":
         modelId = "anthropic.claude-3-5-haiku-20241022-v1:0"
+    elif model_name == "Claude 4 Opus":
+        modelId = "us.anthropic.claude-4-opus-20250219-v1:0"
+    elif model_name == "Claude 4 Sonnet":
+        modelId = "us.anthropic.claude-4-sonnet-20250219-v1:0"
 
     STOP_SEQUENCE = "\n\nHuman:" 
     maxOutputTokens = 4096 
@@ -337,127 +342,20 @@ def create_agent(tools, historyMode):
     chatModel = get_llm()
     model = chatModel.bind_tools(tools)
 
-    class State(TypedDict):
-        messages: Annotated[list, add_messages]
-        image_url: list
-
-    def call_model(state: State, config):
-        logger.info(f"###### call_model ######")
-        logger.info(f"state: {state['messages']}")
-
-        last_message = state['messages'][-1].content
-        logger.info(f"last message: {last_message}")
-        
-        # Get image_url from state
-        image_url = state['image_url'] if 'image_url' in state else []
-        
-        # Check if last_message is JSON and contains path
-        if isinstance(last_message, str):
-            try:
-                message_data = json.loads(last_message)
-                if isinstance(message_data, dict) and "path" in message_data:
-                    image_url.append(message_data["path"])
-                    logger.info(f"Added path to image_url: {message_data['path']}")
-            except json.JSONDecodeError:
-                pass
-        
-        system = (
-            "당신의 이름은 서연이고, 질문에 친근한 방식으로 대답하도록 설계된 대화형 AI입니다."
-            "상황에 맞는 구체적인 세부 정보를 충분히 제공합니다."
-            "모르는 질문을 받으면 솔직히 모른다고 말합니다."
-            "한국어로 답변하세요."
-        )
-
-        try:
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", system),
-                    MessagesPlaceholder(variable_name="messages"),
-                ]
-            )
-            chain = prompt | model
-                
-            response = chain.invoke(state["messages"])
-
-            logger.info(f"call_model: {response.content}")
-
-        except Exception:
-            response = AIMessage(content="답변을 찾지 못하였습니다.")
-
-            err_msg = traceback.format_exc()
-            logger.info(f"error message: {err_msg}")
-            # raise Exception ("Not able to request to LLM")
-
-        return {"messages": [response], "image_url": image_url}
-
-    def should_continue(state: State) -> Literal["continue", "end"]:
-        logger.info(f"###### should_continue ######")
-
-        messages = state["messages"]    
-        last_message = messages[-1]
-        
-        if isinstance(last_message, AIMessage) and last_message.tool_calls:
-            tool_name = last_message.tool_calls[-1]['name']
-            logger.info(f"--- CONTINUE: {tool_name} ---")
-
-            if debug_mode == "Enable":
-                status_messages(last_message)
-
-            return "continue"
-        else:
-            logger.info(f"--- END ---")
-            return "end"
-
-    def buildChatAgent():
-        workflow = StateGraph(State)
-
-        workflow.add_node("agent", call_model)
-        workflow.add_node("action", tool_node)
-        workflow.add_edge(START, "agent")
-        workflow.add_conditional_edges(
-            "agent",
-            should_continue,
-            {
-                "continue": "action",
-                "end": END,
-            },
-        )
-        workflow.add_edge("action", "agent")
-
-        return workflow.compile() 
-    
-    def buildChatAgentWithHistory():
-        workflow = StateGraph(State)
-
-        workflow.add_node("agent", call_model)
-        workflow.add_node("action", tool_node)
-        workflow.add_edge(START, "agent")
-        workflow.add_conditional_edges(
-            "agent",
-            should_continue,
-            {
-                "continue": "action",
-                "end": END,
-            },
-        )
-        workflow.add_edge("action", "agent")
-    
-        return workflow.compile(
-            checkpointer=checkpointer,
-            store=memorystore
-        )
     
     # workflow 
     if historyMode == "Enable":
         app = buildChatAgentWithHistory()
         config = {
             "recursion_limit": 50,
-            "configurable": {"thread_id": userId}
+            "configurable": {"thread_id": userId},
+            "status_container": status_container
         }
     else:
         app = buildChatAgent()
         config = {
-            "recursion_limit": 50
+            "recursion_limit": 50,
+            "status_container": status_container
         }
 
     return app, config
@@ -529,7 +427,7 @@ def load_multiple_mcp_server_parameters():
 def tool_info(tools, st):
     tool_info = ""
     tool_list = []
-    st.info("Tool 정보를 가져옵니다.")
+    # st.info("Tool 정보를 가져옵니다.")
     for tool in tools:
         tool_info += f"name: {tool.name}\n"    
         if hasattr(tool, 'description'):
@@ -538,57 +436,32 @@ def tool_info(tools, st):
         tool_list.append(tool.name)
     st.info(f"Tools: {tool_list}")
 
-async def mcp_rag_agent(query, historyMode, st):
+async def run_agent(query, historyMode, st):
     server_params = load_multiple_mcp_server_parameters()
     logger.info(f"server_params: {server_params}")
 
     async with MultiServerMCPClient(server_params) as client:
-        ref = ""
         with st.status("thinking...", expanded=True, state="running") as status:
             tools = client.get_tools()
+
             if debug_mode == "Enable":
                 tool_info(tools, st)
                 logger.info(f"tools: {tools}")
 
-            agent, config = create_agent(tools, historyMode)
+            status_container = st.empty()            
+            key_container = st.empty()
+            response_container = st.empty()
+                        
+            result = await agent.run(query, tools, status_container, response_container, key_container, historyMode)            
 
-            try:
-                response = await agent.ainvoke({"messages": query}, config)
-                logger.info(f"response: {response}")
+        logger.info(f"result: {result}")
+        st.write(result)
 
-                result = response["messages"][-1].content
-                # logger.info(f"result: {result}")
-
-                debug_msgs = get_debug_messages()
-                for msg in debug_msgs:
-                    logger.info(f"debug_msg: {msg}")
-                    if "image" in msg:
-                        st.image(msg["image"])
-                    elif "text" in msg:
-                        st.info(msg["text"])
-
-                image_url = response["image_url"] if "image_url" in response else []
-                logger.info(f"image_url: {image_url}")
-
-                for image in image_url:
-                    st.image(image)
-
-                st.markdown(result)
-
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": result,
-                    "images": image_url if image_url else []
-                })
-
-                return result
-            except Exception as e:
-                logger.error(f"Error during agent invocation: {str(e)}")
-                raise Exception(f"Agent invocation failed: {str(e)}")
-
-def run_agent(query, historyMode, st):
-    result = asyncio.run(mcp_rag_agent(query, historyMode, st))
-
-    logger.info(f"result: {result}")
+        image_url = []
+        st.session_state.messages.append({
+            "role": "assistant", 
+            "content": result,
+            "images": image_url if image_url else []
+        })
     
     return result

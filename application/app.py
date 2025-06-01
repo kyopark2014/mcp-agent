@@ -5,6 +5,7 @@ import logging
 import sys
 import mcp_config
 import cost_analysis as cost
+import asyncio
 
 logging.basicConfig(
     level=logging.INFO,  # Default to INFO level
@@ -96,7 +97,7 @@ with st.sidebar:
     # model selection box
     modelName = st.selectbox(
         '🖊️ 사용 모델을 선택하세요',
-        ('Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet', 'Claude 3.5 Haiku'), index=1
+        ('Claude 4 Opus', 'Claude 4 Sonnet', 'Claude 3.7 Sonnet', 'Claude 3.5 Sonnet', 'Claude 3.0 Sonnet', 'Claude 3.5 Haiku'), index=3
     )
 
     # debug checkbox
@@ -215,13 +216,13 @@ if prompt := st.chat_input("메시지를 입력하세요."):
             sessionState = ""
             chat.references = []
             chat.image_url = []
-            response = chat.run_agent(prompt, "Disable", st)
+            response = asyncio.run(chat.run_agent(prompt, "Disable", st))
 
         elif mode == 'Agent (Chat)':
             sessionState = ""
             chat.references = []
             chat.image_url = []
-            response = chat.run_agent(prompt, "Enable", st)
+            response = asyncio.run(chat.run_agent(prompt, "Enable", st))
 
         elif mode == '번역하기':
             response = chat.translate_text(prompt)
