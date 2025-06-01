@@ -452,16 +452,14 @@ async def run_agent(query, historyMode, st):
             key_container = st.empty()
             response_container = st.empty()
                         
-            result = await agent.run(query, tools, status_container, response_container, key_container, historyMode)            
+            result, image_url = await agent.run(query, tools, status_container, response_container, key_container, historyMode)            
 
-        logger.info(f"result: {result}")
-        st.write(result)
+        if agent.response_msg:
+            with st.expander(f"수행 결과"):
+                response_msg = '\n\n'.join(agent.response_msg)
+                st.markdown(response_msg)
 
-        image_url = []
-        st.session_state.messages.append({
-            "role": "assistant", 
-            "content": result,
-            "images": image_url if image_url else []
-        })
+        logger.info(f"result: {result}")       
+        logger.info(f"image_url: {image_url}")
     
-    return result
+    return result, image_url
