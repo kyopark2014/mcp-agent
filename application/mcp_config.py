@@ -109,18 +109,6 @@ def load_config(mcp_type):
             }
         }
 
-    elif mcp_type == "aws_rag":
-        return {
-            "mcpServers": {
-                "aws_storage": {
-                    "command": "python",
-                    "args": [
-                        "application/mcp_server_rag.py"
-                    ]
-                }
-            }
-        }    
-    
     elif mcp_type == "tavily":
         if not tavily_api_key:
             logger.warning("Tavily server is disabled due to missing API key")
@@ -174,6 +162,18 @@ def load_config(mcp_type):
                     "args": [
                         "@modelcontextprotocol/server-filesystem",
                         "~/"
+                    ]
+                }
+            }
+        }
+    
+    elif mcp_type == "use_aws":
+        return {
+            "mcpServers": {
+                "use_aws": {
+                    "command": "python",
+                    "args": [
+                        "application/mcp_server_use_aws.py"
                     ]
                 }
             }
