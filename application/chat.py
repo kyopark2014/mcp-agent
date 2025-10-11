@@ -9,9 +9,30 @@ import agent
 from langchain_aws import ChatBedrock
 from botocore.config import Config
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
-from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
+
+# Simple memory class to replace ConversationBufferWindowMemory
+class SimpleMemory:
+    def __init__(self, k=5):
+        self.k = k
+        self.chat_memory = SimpleChatMemory()
+    
+    def load_memory_variables(self, inputs):
+        return {"chat_history": self.chat_memory.messages[-self.k:] if len(self.chat_memory.messages) > self.k else self.chat_memory.messages}
+
+class SimpleChatMemory:
+    def __init__(self):
+        self.messages = []
+    
+    def add_user_message(self, message):
+        self.messages.append(HumanMessage(content=message))
+    
+    def add_ai_message(self, message):
+        self.messages.append(AIMessage(content=message))
+    
+    def clear(self):
+        self.messages = []
 
 from mcp import ClientSession, StdioServerParameters
 from langgraph.prebuilt import ToolNode
@@ -43,6 +64,7 @@ memorystores = dict()
 
 checkpointer = MemorySaver()
 memorystore = InMemoryStore()
+memory_chain = None  # Initialize memory_chain as global variable
 
 checkpointers[userId] = checkpointer
 memorystores[userId] = memorystore
@@ -111,21 +133,17 @@ def status_messages(message):
             push_debug_messages("text", status)
 
 def initiate():
-    global userId
-    global memory_chain, checkpointers, memorystores, checkpointer, memorystore
-
-    userId = uuid.uuid4().hex
-    logger.info(f"userId: {userId}")
+    global memory_chain, checkpointer, memorystore, checkpointers, memorystores
 
     if userId in map_chain:  
-            # print('memory exist. reuse it!')
-            memory_chain = map_chain[userId]
+        logger.info(f"memory exist. reuse it!")
+        memory_chain = map_chain[userId]
 
-            checkpointer = checkpointers[userId]
-            memorystore = memorystores[userId]
+        checkpointer = checkpointers[userId]
+        memorystore = memorystores[userId]
     else: 
-        # print('memory does not exist. create new one!')        
-        memory_chain = ConversationBufferWindowMemory(memory_key="chat_history", output_key='answer', return_messages=True, k=5)
+        logger.info(f"memory not exist. create new memory!")
+        memory_chain = SimpleMemory(k=5)
         map_chain[userId] = memory_chain
 
         checkpointer = MemorySaver()
@@ -167,12 +185,29 @@ def update(modelName, debugMode, mcp):
     logger.info(f"mcp_json: {mcp_json}")
 
 def clear_chat_history():
-    memory_chain = []
+    global memory_chain
+    # Initialize memory_chain if it doesn't exist
+    if memory_chain is None:
+        initiate()
+    
+    if memory_chain and hasattr(memory_chain, 'chat_memory'):
+        memory_chain.chat_memory.clear()
+    else:
+        memory_chain = SimpleMemory(k=5)
     map_chain[userId] = memory_chain
 
 def save_chat_history(text, msg):
-    memory_chain.chat_memory.add_user_message(text)
-    memory_chain.chat_memory.add_ai_message(msg) 
+    global memory_chain
+    # Initialize memory_chain if it doesn't exist
+    if memory_chain is None:
+        initiate()
+    
+    if memory_chain and hasattr(memory_chain, 'chat_memory'):
+        memory_chain.chat_memory.add_user_message(text)
+        if len(msg) > MSG_LENGTH:
+            memory_chain.chat_memory.add_ai_message(msg[:MSG_LENGTH])                          
+        else:
+            memory_chain.chat_memory.add_ai_message(msg) 
 
 selected_chat = 0
 def get_llm():
@@ -296,6 +331,8 @@ def traslation(chat, text, input_language, output_language):
 # General Conversation
 #########################################################
 def general_conversation(query):
+    global memory_chain
+    initiate()  # Initialize memory_chain
     llm = get_llm()
 
     system = (
@@ -312,7 +349,10 @@ def general_conversation(query):
         ("human", human)
     ])
                 
-    history = memory_chain.load_memory_variables({})["chat_history"]
+    if memory_chain and hasattr(memory_chain, 'load_memory_variables'):
+        history = memory_chain.load_memory_variables({})["chat_history"]
+    else:
+        history = []
 
     chain = prompt | llm | StrOutputParser()
     try: 
@@ -345,14 +385,14 @@ def create_agent(tools, historyMode):
     
     # workflow 
     if historyMode == "Enable":
-        app = buildChatAgentWithHistory()
+        app = agent.buildChatAgentWithHistory()
         config = {
             "recursion_limit": 50,
             "configurable": {"thread_id": userId},
             "status_container": status_container
         }
     else:
-        app = buildChatAgent()
+        app = agent.buildChatAgent()
         config = {
             "recursion_limit": 50,
             "status_container": status_container
@@ -440,26 +480,26 @@ async def run_agent(query, historyMode, st):
     server_params = load_multiple_mcp_server_parameters()
     logger.info(f"server_params: {server_params}")
 
-    async with MultiServerMCPClient(server_params) as client:
-        with st.status("thinking...", expanded=True, state="running") as status:
-            tools = client.get_tools()
+    client = MultiServerMCPClient(server_params)
+    tools = await client.get_tools()
+    
+    with st.status("thinking...", expanded=True, state="running") as status:
+        if debug_mode == "Enable":
+            tool_info(tools, st)
+            logger.info(f"tools: {tools}")
 
-            if debug_mode == "Enable":
-                tool_info(tools, st)
-                logger.info(f"tools: {tools}")
+        status_container = st.empty()            
+        key_container = st.empty()
+        response_container = st.empty()
+                    
+        result, image_url = await agent.run(query, tools, status_container, response_container, key_container, historyMode)            
 
-            status_container = st.empty()            
-            key_container = st.empty()
-            response_container = st.empty()
-                        
-            result, image_url = await agent.run(query, tools, status_container, response_container, key_container, historyMode)            
+    if agent.response_msg:
+        with st.expander(f"수행 결과"):
+            response_msg = '\n\n'.join(agent.response_msg)
+            st.markdown(response_msg)
 
-        if agent.response_msg:
-            with st.expander(f"수행 결과"):
-                response_msg = '\n\n'.join(agent.response_msg)
-                st.markdown(response_msg)
-
-        logger.info(f"result: {result}")       
-        logger.info(f"image_url: {image_url}")
+    logger.info(f"result: {result}")       
+    logger.info(f"image_url: {image_url}")
     
     return result, image_url
