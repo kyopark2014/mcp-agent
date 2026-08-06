@@ -377,7 +377,7 @@ fileId = uuid.uuid4().hex
 # Agent 
 #####################################################
 def create_agent(tools, historyMode):
-    tool_node = ToolNode(tools)
+    tool_node = ToolNode(tools, handle_tool_errors=True)
 
     chatModel = get_llm()
     model = chatModel.bind_tools(tools)
